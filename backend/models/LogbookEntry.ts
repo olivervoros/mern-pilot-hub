@@ -1,6 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-const logbookEntrySchema = new mongoose.Schema(
+// Interface for LogbookEntry document
+export interface ILogbookEntry extends Document {
+  title: string;
+  departureIcao: string;
+  arrivalIcao: string;
+  aircraftType: string;
+  departureTime: Date;
+  arrivalTime: Date;
+  additionalInfo: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Schema definition
+const logbookEntrySchema = new Schema<ILogbookEntry>(
   {
     title: {
       type: String,
@@ -39,4 +53,7 @@ const logbookEntrySchema = new mongoose.Schema(
 );
 
 // Create and export the model
-export default mongoose.model('LogbookEntry', logbookEntrySchema);
+const LogbookEntry: Model<ILogbookEntry> = mongoose.model<ILogbookEntry>('LogbookEntry', logbookEntrySchema);
+
+export default LogbookEntry;
+

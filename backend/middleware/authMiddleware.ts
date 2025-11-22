@@ -1,4 +1,16 @@
 import jwt from 'jsonwebtoken';
+import type { JwtPayload, VerifyErrors } from 'jsonwebtoken';
+import type { Request, Response, NextFunction } from 'express';
+
+/**
+ * Extended Express Request interface to include user property
+ */
+export interface AuthenticatedRequest extends Request {
+  user?: JwtPayload & {
+    token: string;
+    [key: string]: any;
+  };
+}
 
 /**
  * JWT Authentication Middleware
@@ -9,16 +21,21 @@ import jwt from 'jsonwebtoken';
  * On success, attaches the decoded user info to req.user
  * On failure, returns 401 Unauthorized
  */
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
   try {
     // Get the token from the Authorization header
     const authHeader = req.headers['authorization'];
 
     // Check if Authorization header exists
     if (!authHeader) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Access denied. No token provided.',
       });
+      return;
     }
 
     // Extract token from "Bearer <token>" format
@@ -26,9 +43,10 @@ export const authenticateToken = (req, res, next) => {
 
     // Check if token exists
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Access denied. Invalid token format.',
       });
+      return;
     }
 
     // Verify the token
@@ -36,23 +54,24 @@ export const authenticateToken = (req, res, next) => {
     const JWT_SECRET =
       process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
       if (err) {
-        return res.status(403).json({
+        res.status(403).json({
           message: 'Access denied. Invalid or expired token.',
         });
+        return;
       }
 
       // Attach decoded user info and token to request object
       req.user = {
-        ...decoded,
+        ...(decoded as JwtPayload),
         token,
       };
       next();
     });
   } catch (error) {
     console.error('Error in authentication middleware:', error);
-    return res.status(500).json({
+    res.status(500).json({
       message: 'Internal server error during authentication.',
     });
   }
@@ -62,20 +81,25 @@ export const authenticateToken = (req, res, next) => {
  * Optional: Middleware to check if user has specific role
  * Usage: Use after authenticateToken middleware
  */
-export const authorizeRoles = (...roles) => {
-  return (req, res, next) => {
+export const authorizeRoles = (...roles: string[]) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Access denied. User not authenticated.',
       });
+      return;
     }
 
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
+    // Check if user has a role property and if it's in the allowed roles
+    const userRole = req.user.role as string | undefined;
+    if (!userRole || !roles.includes(userRole)) {
+      res.status(403).json({
         message: 'Access denied. Insufficient permissions.',
       });
+      return;
     }
 
     next();
   };
 };
+

@@ -1,23 +1,26 @@
-import User from '../models/User.js';
+import type { Request, Response } from 'express';
+import User from '../models/User.ts';
 
 /**
  * Create a new user
  */
-export const createUser = async (req, res) => {
+export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Name, email, and password are required.',
       });
+      return;
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({
+      res.status(409).json({
         message: 'User with this email already exists.',
       });
+      return;
     }
 
     const user = await User.create({ name, email, password });
@@ -37,7 +40,7 @@ export const createUser = async (req, res) => {
 /**
  * Get all users
  */
-export const getAllUsers = async (_req, res) => {
+export const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
     const users = await User.find();
     res.status(200).json({ users });
@@ -52,15 +55,16 @@ export const getAllUsers = async (_req, res) => {
 /**
  * Get specific user by ID
  */
-export const getUserById = async (req, res) => {
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({
+      res.status(404).json({
         message: 'User not found.',
       });
+      return;
     }
 
     res.status(200).json({ user });
@@ -75,7 +79,7 @@ export const getUserById = async (req, res) => {
 /**
  * Update an existing user
  */
-export const updateUser = async (req, res) => {
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
@@ -90,9 +94,10 @@ export const updateUser = async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({
+      res.status(404).json({
         message: 'User not found.',
       });
+      return;
     }
 
     res.status(200).json({
@@ -110,15 +115,16 @@ export const updateUser = async (req, res) => {
 /**
  * Delete a user
  */
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
 
     if (!deletedUser) {
-      return res.status(404).json({
+      res.status(404).json({
         message: 'User not found.',
       });
+      return;
     }
 
     res.status(200).json({
@@ -132,3 +138,4 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+

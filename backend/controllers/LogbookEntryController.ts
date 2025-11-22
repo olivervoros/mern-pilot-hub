@@ -1,7 +1,8 @@
-import LogbookEntry from '../models/LogbookEntry.js';
+import type { Request, Response } from 'express';
+import LogbookEntry from '../models/LogbookEntry.ts';
 
 // Controller function to create a new logbook entry
-export const createNewLogbookEntry = async (req, res) => {
+export const createNewLogbookEntry = async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       title,
@@ -38,7 +39,7 @@ export const createNewLogbookEntry = async (req, res) => {
 };
 
 // Controller function to get all logbook entries
-export const getAllLogbookEntries = async (_req, res) => {
+export const getAllLogbookEntries = async (_req: Request, res: Response): Promise<void> => {
   try {
     const logbookEntries = await LogbookEntry.find();
 
@@ -50,7 +51,7 @@ export const getAllLogbookEntries = async (_req, res) => {
 };
 
 // Controller function to update an existing logbook entry
-export const updateLogbookEntry = async (req, res) => {
+export const updateLogbookEntry = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const {
@@ -81,7 +82,8 @@ export const updateLogbookEntry = async (req, res) => {
     );
 
     if (!updatedLogbookEntry) {
-      return res.status(404).json({ message: 'LogbookEntry not found.' });
+      res.status(404).json({ message: 'LogbookEntry not found.' });
+      return;
     }
 
     res.status(200).json({
@@ -95,13 +97,14 @@ export const updateLogbookEntry = async (req, res) => {
 };
 
 // Controller function to get a logbook entry by ID
-export const getLogbookEntryById = async (req, res) => {
+export const getLogbookEntryById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const logbookEntry = await LogbookEntry.findById(id);
 
     if (!logbookEntry) {
-      return res.status(404).json({ message: 'LogbookEntry not found.' });
+      res.status(404).json({ message: 'LogbookEntry not found.' });
+      return;
     }
 
     res.status(200).json({ LogbookEntry: logbookEntry });
@@ -112,13 +115,14 @@ export const getLogbookEntryById = async (req, res) => {
 };
 
 // Controller function to delete a logbook entry by ID
-export const deleteLogbookEntryById = async (req, res) => {
+export const deleteLogbookEntryById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedLogbookEntry = await LogbookEntry.findByIdAndDelete(id);
 
     if (!deletedLogbookEntry) {
-      return res.status(404).json({ message: 'LogbookEntry not found.' });
+      res.status(404).json({ message: 'LogbookEntry not found.' });
+      return;
     }
 
     res.status(200).json({
@@ -130,3 +134,4 @@ export const deleteLogbookEntryById = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

@@ -1,14 +1,14 @@
-import express from 'express';
+import express, { Router } from 'express';
 import {
   createNewLogbookEntry,
   getAllLogbookEntries,
   updateLogbookEntry,
   getLogbookEntryById,
   deleteLogbookEntryById,
-} from '../controllers/LogbookEntryController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+} from '../controllers/LogbookEntryController.ts';
+import { authenticateToken } from '../middleware/authMiddleware.ts';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // Example: Apply authentication middleware to all routes
 // Uncomment the line below to protect all routes in this file
@@ -36,3 +36,4 @@ router.get('/:id', getLogbookEntryById);
 router.delete('/:id', deleteLogbookEntryById);
 
 export default router;
+

@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
 
-const uri =
-  'mongodb+srv://olivervoros_db_user:rPxZTMgAgr8XD9SYYqfbkETx9Mn7Wx@cluster0.eiuwxor.mongodb.net/?appName=Cluster0';
+const MONGODB_URL = process.env.MONGODB_URL;
+
+if (!MONGODB_URL) {
+  throw new Error('MONGODB_URL environment variable is not defined. Please set it in your .env file.');
+}
 
 // Connect to MongoDB using Mongoose
 export const connectDB = async () => {
   try {
-    await mongoose.connect(uri, {
+    await mongoose.connect(MONGODB_URL, {
       dbName: 'pilot-hub', // Specify your database name here
     });
     console.log('Successfully connected to MongoDB!');
