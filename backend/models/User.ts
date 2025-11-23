@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  refreshToken?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +25,9 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    refreshToken: {
+      type: String,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt automatically
@@ -34,4 +38,3 @@ const UserSchema = new Schema<IUser>(
 const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 
 export default User;
-

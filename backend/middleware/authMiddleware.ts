@@ -50,25 +50,35 @@ export const authenticateToken = (
     }
 
     // Verify the token
-    // Use environment variable for JWT secret, fallback to default for development
-    const JWT_SECRET =
-      process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+    // Use ACCESS_TOKEN_SECRET to match the secret used when signing the token
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
-    jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
-      if (err) {
-        res.status(403).json({
-          message: 'Access denied. Invalid or expired token.',
-        });
-        return;
+    if (!ACCESS_TOKEN_SECRET) {
+      res.status(500).json({
+        message: 'Server configuration error. Missing ACCESS_TOKEN_SECRET.',
+      });
+      return;
+    }
+
+    jwt.verify(
+      token,
+      ACCESS_TOKEN_SECRET,
+      (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+        if (err) {
+          res.status(403).json({
+            message: 'Access denied. Invalid or expired token.',
+          });
+          return;
+        }
+
+        // Attach decoded user info and token to request object
+        req.user = {
+          ...(decoded as JwtPayload),
+          token,
+        };
+        next();
       }
-
-      // Attach decoded user info and token to request object
-      req.user = {
-        ...(decoded as JwtPayload),
-        token,
-      };
-      next();
-    });
+    );
   } catch (error) {
     console.error('Error in authentication middleware:', error);
     res.status(500).json({
@@ -82,7 +92,11 @@ export const authenticateToken = (
  * Usage: Use after authenticateToken middleware
  */
 export const authorizeRoles = (...roles: string[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
     if (!req.user) {
       res.status(401).json({
         message: 'Access denied. User not authenticated.',
@@ -102,4 +116,3 @@ export const authorizeRoles = (...roles: string[]) => {
     next();
   };
 };
-

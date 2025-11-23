@@ -6,8 +6,8 @@ export interface ILogbookEntry extends Document {
   departureIcao: string;
   arrivalIcao: string;
   aircraftType: string;
-  departureTime: Date;
-  arrivalTime: Date;
+  departureTime: String;
+  arrivalTime: String;
   additionalInfo: string;
   createdAt: Date;
   updatedAt: Date;
@@ -35,11 +35,11 @@ const logbookEntrySchema = new Schema<ILogbookEntry>(
       required: true,
     },
     departureTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     arrivalTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     additionalInfo: {
@@ -53,7 +53,9 @@ const logbookEntrySchema = new Schema<ILogbookEntry>(
 );
 
 // Create and export the model
-const LogbookEntry: Model<ILogbookEntry> = mongoose.model<ILogbookEntry>('LogbookEntry', logbookEntrySchema);
+const LogbookEntry: Model<ILogbookEntry> = mongoose.model<ILogbookEntry>(
+  'LogbookEntry',
+  logbookEntrySchema
+);
 
 export default LogbookEntry;
-

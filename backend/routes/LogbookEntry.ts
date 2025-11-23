@@ -17,23 +17,22 @@ const router: Router = express.Router();
 // Define route for creating a new logbook entry
 // Example: Apply middleware to specific routes
 // router.post('/add', authenticateToken, createNewLogbookEntry);
-router.post('/add', createNewLogbookEntry);
+router.post('/', authenticateToken, createNewLogbookEntry);
 
 // Example: Protect multiple routes
 // router.get('/', authenticateToken, getAllLogbookEntries);
-router.get('/', getAllLogbookEntries);
+router.get('/', authenticateToken, getAllLogbookEntries);
 
 // Example: Protect update route
 // router.put('/:id', authenticateToken, updateLogbookEntry);
-router.put('/:id', updateLogbookEntry);
+router.put('/:id', authenticateToken, updateLogbookEntry);
 
 // Example: Protect get by ID route
 // router.get('/:id', authenticateToken, getLogbookEntryById);
-router.get('/:id', getLogbookEntryById);
+router.get('/:id', authenticateToken, getLogbookEntryById);
 
 // Example: Protect delete route
 // router.delete('/:id', authenticateToken, deleteLogbookEntryById);
-router.delete('/:id', deleteLogbookEntryById);
+router.delete('/:id', authenticateToken, deleteLogbookEntryById);
 
 export default router;
-

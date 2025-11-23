@@ -1,10 +1,14 @@
 import type { Request, Response } from 'express';
 import User from '../models/User.ts';
+import bcrypt from 'bcrypt';
 
 /**
  * Create a new user
  */
-export const createUser = async (req: Request, res: Response): Promise<void> => {
+export const createUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { name, email, password } = req.body;
 
@@ -23,24 +27,36 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const user = await User.create({ name, email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.status(201).json({
-      message: 'User created successfully.',
-      user,
+    //create and store the new user
+    const result = await User.create({
+      name: name,
+      email: email,
+      password: hashedPassword,
     });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({
-      message: 'Internal server error while creating user.',
-    });
+
+    //const user = await User.create({ name, email, password: hashedPassword });
+
+    console.log(result);
+
+    res.status(201).json({ success: `New user ${email} created!` });
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'Internal server error while creating user.';
+    res.status(500).json({ message });
   }
 };
 
 /**
  * Get all users
  */
-export const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
+export const getAllUsers = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const users = await User.find();
     res.status(200).json({ users });
@@ -55,7 +71,10 @@ export const getAllUsers = async (_req: Request, res: Response): Promise<void> =
 /**
  * Get specific user by ID
  */
-export const getUserById = async (req: Request, res: Response): Promise<void> => {
+export const getUserById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
@@ -79,7 +98,10 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 /**
  * Update an existing user
  */
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
@@ -115,7 +137,10 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 /**
  * Delete a user
  */
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+export const deleteUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
@@ -138,4 +163,3 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     });
   }
 };
-
