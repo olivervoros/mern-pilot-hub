@@ -1,8 +1,10 @@
+import { ObjectId } from 'mongodb';
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 // Interface for LogbookEntry document
 export interface ILogbookEntry extends Document {
   title: string;
+  userId: ObjectId;
   departureIcao: string;
   arrivalIcao: string;
   aircraftType: string;
@@ -18,6 +20,10 @@ const logbookEntrySchema = new Schema<ILogbookEntry>(
   {
     title: {
       type: String,
+      required: true,
+    },
+    userId: {
+      type: ObjectId,
       required: true,
     },
     departureIcao: {

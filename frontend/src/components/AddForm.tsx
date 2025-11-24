@@ -4,13 +4,11 @@ import { type LogbookEntry } from '../types/LogbookEntry';
 interface AddFormProps {
   logbookEntries: LogbookEntry[];
   setLogbookEntries: React.Dispatch<React.SetStateAction<LogbookEntry[]>>;
-  onSave?: () => void;
 }
 
 export default function AddForm({
   logbookEntries,
   setLogbookEntries,
-  onSave,
 }: AddFormProps) {
   const [title, setTitle] = useState('');
   const [departureIcao, setDepartureIcao] = useState('');
@@ -55,9 +53,6 @@ export default function AddForm({
     setDepartureTime('');
     setArrivalTime('');
     setAdditionalInfo('');
-
-    // Call the onSave callback if provided
-    onSave?.();
   };
 
   return (

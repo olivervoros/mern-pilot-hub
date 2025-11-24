@@ -2,10 +2,14 @@ import type { Request, Response } from 'express';
 import LogbookEntry from '../models/LogbookEntry.ts';
 
 // Controller function to create a new logbook entry
-export const createNewLogbookEntry = async (req: Request, res: Response): Promise<void> => {
+export const createNewLogbookEntry = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const {
       title,
+      userId,
       departureIcao,
       arrivalIcao,
       aircraftType,
@@ -17,6 +21,7 @@ export const createNewLogbookEntry = async (req: Request, res: Response): Promis
     // Create a new LogbookEntry instance
     const newLogbookEntry = new LogbookEntry({
       title,
+      userId,
       departureIcao,
       arrivalIcao,
       aircraftType,
@@ -39,7 +44,10 @@ export const createNewLogbookEntry = async (req: Request, res: Response): Promis
 };
 
 // Controller function to get all logbook entries
-export const getAllLogbookEntries = async (_req: Request, res: Response): Promise<void> => {
+export const getAllLogbookEntries = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const logbookEntries = await LogbookEntry.find();
 
@@ -51,11 +59,15 @@ export const getAllLogbookEntries = async (_req: Request, res: Response): Promis
 };
 
 // Controller function to update an existing logbook entry
-export const updateLogbookEntry = async (req: Request, res: Response): Promise<void> => {
+export const updateLogbookEntry = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const {
       title,
+      userId,
       departureIcao,
       arrivalIcao,
       aircraftType,
@@ -68,6 +80,7 @@ export const updateLogbookEntry = async (req: Request, res: Response): Promise<v
       id,
       {
         title,
+        userId,
         departureIcao,
         arrivalIcao,
         aircraftType,
@@ -97,7 +110,10 @@ export const updateLogbookEntry = async (req: Request, res: Response): Promise<v
 };
 
 // Controller function to get a logbook entry by ID
-export const getLogbookEntryById = async (req: Request, res: Response): Promise<void> => {
+export const getLogbookEntryById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const logbookEntry = await LogbookEntry.findById(id);
@@ -115,7 +131,10 @@ export const getLogbookEntryById = async (req: Request, res: Response): Promise<
 };
 
 // Controller function to delete a logbook entry by ID
-export const deleteLogbookEntryById = async (req: Request, res: Response): Promise<void> => {
+export const deleteLogbookEntryById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedLogbookEntry = await LogbookEntry.findByIdAndDelete(id);
@@ -134,4 +153,3 @@ export const deleteLogbookEntryById = async (req: Request, res: Response): Promi
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
