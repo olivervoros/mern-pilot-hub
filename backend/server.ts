@@ -6,9 +6,12 @@ import logbookEntryRouter from './routes/LogbookEntry.ts';
 import userRouter from './routes/User.ts';
 import authRouter from './routes/Auth.ts';
 import { connectDB } from './db.js';
+import cors from 'cors';
 
 const app: Express = express();
 const port: number = parseInt(process.env.PORT || '3000', 10);
+
+app.use(cors());
 
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());

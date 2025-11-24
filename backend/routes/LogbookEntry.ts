@@ -21,7 +21,7 @@ router.post('/', authenticateToken, createNewLogbookEntry);
 
 // Example: Protect multiple routes
 // router.get('/', authenticateToken, getAllLogbookEntries);
-router.get('/', authenticateToken, getAllLogbookEntries);
+router.get('/', getAllLogbookEntries); // TODO: Add Auth back
 
 // Example: Protect update route
 // router.put('/:id', authenticateToken, updateLogbookEntry);
