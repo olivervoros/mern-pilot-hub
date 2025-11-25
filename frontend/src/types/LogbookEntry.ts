@@ -1,5 +1,5 @@
 export interface LogbookEntry {
-  id: number;
+  _id?: string;
   title: string;
   departureIcao: string;
   arrivalIcao: string;

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
+import axios from 'axios';
 
 interface EditFormProps {
-  editedEntryId: number;
+  editedEntryId: string;
   logbookEntries: LogbookEntry[];
   setLogbookEntries: React.Dispatch<React.SetStateAction<LogbookEntry[]>>;
   onSave: () => void;
@@ -24,7 +25,7 @@ export default function EditForm({
 
   // Find the entry being edited
   const editedFormEntry = logbookEntries.find(
-    (item: LogbookEntry) => item.id === editedEntryId
+    (item: LogbookEntry) => item._id === editedEntryId
   );
 
   // Initialize form fields when the entry is found
@@ -46,7 +47,7 @@ export default function EditForm({
     // Update the logbook entry
     setLogbookEntries((prevEntries) =>
       prevEntries.map((entry) =>
-        entry.id === editedEntryId
+        entry._id === editedEntryId
           ? {
               ...entry,
               title,
@@ -60,6 +61,20 @@ export default function EditForm({
           : entry
       )
     );
+    try {
+      axios.put(`http://localhost:3000/api/logbook-entries/${editedEntryId}`, {
+        title,
+        userId: '6922e1df7513a020b5f46bd9', // TODO!!
+        departureIcao,
+        arrivalIcao,
+        aircraftType,
+        departureTime,
+        arrivalTime,
+        additionalInfo,
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
     // Call the onSave callback to close the form
     onSave();

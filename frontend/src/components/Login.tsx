@@ -1,9 +1,12 @@
 import {
   useState,
+  useContext,
   type FormEvent,
   type Dispatch,
   type SetStateAction,
 } from 'react';
+import axios from 'axios';
+import AuthContext from '../context/AuthProvider';
 
 type NewUser = {
   email: string;
@@ -19,18 +22,40 @@ export default function Login({ setLoginUser }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const { setAuth } = useContext(AuthContext);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Add new entry to the logbook
+    // Log in a user
     setLoginUser((prevEntries) => [
       {
-        name: name,
         email: email,
         password: password,
       },
       ...prevEntries,
     ]);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/login`,
+        JSON.stringify({ email, password }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          //withCredentials: true,
+        }
+      );
+      console.log(JSON.stringify(response?.data));
+      //console.log(JSON.stringify(response));
+      const accessToken = response?.data?.accessToken;
+      setAuth({ email, password, accessToken });
+      setEmail('');
+      setPassword('');
+    } catch (err) {
+      if (err) {
+        console.log(err);
+      }
+    }
 
     // Reset form fields
     setEmail('');

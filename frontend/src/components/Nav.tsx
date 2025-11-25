@@ -11,7 +11,7 @@ export default function Nav() {
             <Link to='/login'>Login</Link>
           </li>
           <li>
-            <Link to='/logbook'>Logbook</Link>
+            <Link to='/logbook'>Logbooks</Link>
           </li>
           <li>
             <Link to='/add-logbook'>Add New Logbook Entry</Link>

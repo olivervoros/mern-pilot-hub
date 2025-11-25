@@ -1,5 +1,5 @@
 interface LoogbookEntryCardProps {
-  id: number;
+  _id: string;
   title: string;
   departureIcao: string;
   arrivalIcao: string;
@@ -7,12 +7,12 @@ interface LoogbookEntryCardProps {
   departureTime: string;
   arrivalTime: string;
   additionalInfo: string;
-  handleDelete: (id: number) => void;
-  handleEdit: (id: number) => void;
+  handleDelete: (_id: string) => void;
+  handleEdit: (_id: string) => void;
 }
 
 export default function LogbookEntryCard({
-  id,
+  _id,
   title,
   departureIcao,
   arrivalIcao,
@@ -52,13 +52,13 @@ export default function LogbookEntryCard({
         </p>
         <div className='flex mt-4 md:mt-6 justify-center'>
           <button
-            onClick={() => handleEdit(id)}
+            onClick={() => handleEdit(_id)}
             className='inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-500 focus:ring-4 focus:outline-none focus:ring-blue-300'
           >
             Modify Entry
           </button>
           <button
-            onClick={() => handleDelete(id)}
+            onClick={() => handleDelete(_id)}
             className='py-2 px-4 ms-2 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-red-400 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100'
             type='button'
           >

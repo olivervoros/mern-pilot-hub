@@ -72,12 +72,7 @@ function App() {
           <Route path='weather-forecast' element={<WeatherForecast />} />
           <Route
             path='add-logbook'
-            element={
-              <AddForm
-                logbookEntries={logbookEntries}
-                setLogbookEntries={setLogbookEntries}
-              />
-            }
+            element={<AddForm setLogbookEntries={setLogbookEntries} />}
           />
         </Routes>
       </BrowserRouter>

@@ -17,7 +17,7 @@ const router: Router = express.Router();
 // Define route for creating a new logbook entry
 // Example: Apply middleware to specific routes
 // router.post('/add', authenticateToken, createNewLogbookEntry);
-router.post('/', authenticateToken, createNewLogbookEntry);
+router.post('/', createNewLogbookEntry); // TODO: Add Auth back
 
 // Example: Protect multiple routes
 // router.get('/', authenticateToken, getAllLogbookEntries);
@@ -25,14 +25,14 @@ router.get('/', getAllLogbookEntries); // TODO: Add Auth back
 
 // Example: Protect update route
 // router.put('/:id', authenticateToken, updateLogbookEntry);
-router.put('/:id', authenticateToken, updateLogbookEntry);
+router.put('/:id', updateLogbookEntry); // TODO: Add Auth back
 
 // Example: Protect get by ID route
 // router.get('/:id', authenticateToken, getLogbookEntryById);
-router.get('/:id', authenticateToken, getLogbookEntryById);
+router.get('/:id', getLogbookEntryById); // TODO: Add Auth back
 
 // Example: Protect delete route
 // router.delete('/:id', authenticateToken, deleteLogbookEntryById);
-router.delete('/:id', authenticateToken, deleteLogbookEntryById);
+router.delete('/:id', deleteLogbookEntryById); // TODO: Add Auth back
 
 export default router;

@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
+import axios from 'axios';
 
 interface AddFormProps {
-  logbookEntries: LogbookEntry[];
   setLogbookEntries: React.Dispatch<React.SetStateAction<LogbookEntry[]>>;
 }
 
-export default function AddForm({
-  logbookEntries,
-  setLogbookEntries,
-}: AddFormProps) {
+export default function AddForm({ setLogbookEntries }: AddFormProps) {
   const [title, setTitle] = useState('');
   const [departureIcao, setDepartureIcao] = useState('');
   const [arrivalIcao, setArrivalIcao] = useState('');
@@ -18,22 +15,12 @@ export default function AddForm({
   const [arrivalTime, setArrivalTime] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
 
-  const getNextId = (entries: LogbookEntry[]): number => {
-    if (entries.length === 0) return 1;
-
-    const maxId = Math.max(...entries.map((entry) => entry.id));
-    return maxId + 1;
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const addNewLogookEntry = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    const nextId = getNextId(logbookEntries);
 
     // Add new entry to the logbook
     setLogbookEntries((prevEntries) => [
       {
-        id: nextId,
         title: title,
         departureIcao: departureIcao,
         arrivalIcao: arrivalIcao,
@@ -44,6 +31,29 @@ export default function AddForm({
       },
       ...prevEntries,
     ]);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/logbook-entries',
+        JSON.stringify({
+          title: title,
+          userId: '6922e1df7513a020b5f46bd9', // TODO!!
+          departureIcao: departureIcao,
+          arrivalIcao: arrivalIcao,
+          aircraftType: aircraftType,
+          departureTime: departureTime,
+          arrivalTime: arrivalTime,
+          additionalInfo: additionalInfo,
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          //withCredentials: true,
+        }
+      );
+      console.log(response?.data);
+    } catch (err) {
+      console.log(err);
+    }
 
     // Reset form fields
     setTitle('');
@@ -57,7 +67,7 @@ export default function AddForm({
 
   return (
     <div>
-      <form className='max-w-sm mx-auto' onSubmit={handleSubmit}>
+      <form className='max-w-sm mx-auto' onSubmit={addNewLogookEntry}>
         <div className='mb-5'>
           <label
             htmlFor='title'
