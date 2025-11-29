@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import User from '../models/User.ts';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 /**
  * Create a new user
@@ -40,7 +41,34 @@ export const createUser = async (
 
     console.log(result);
 
-    res.status(201).json({ success: `New user ${email} created!` });
+    // Get JWT secret from environment
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+    if (!accessTokenSecret) {
+      res.status(500).json({
+        message: 'Server configuration error. Missing JWT secret.',
+      });
+      return;
+    }
+
+    // Create access token for the newly created user
+    const accessToken = jwt.sign(
+      {
+        UserInfo: {
+          email: result.email,
+        },
+      },
+      accessTokenSecret,
+      { expiresIn: '1d' }
+    );
+
+    const userId = result._id;
+
+    res.status(201).json({
+      success: `New user ${email} created!`,
+      userId,
+      accessToken,
+    });
   } catch (err) {
     const message =
       err instanceof Error

@@ -7,6 +7,7 @@ import {
 } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 type NewUser = {
   email: string;
@@ -23,6 +24,7 @@ export default function Login({ setLoginUser }: LoginProps) {
   const [password, setPassword] = useState('');
 
   const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,18 +50,18 @@ export default function Login({ setLoginUser }: LoginProps) {
       console.log(JSON.stringify(response?.data));
       //console.log(JSON.stringify(response));
       const accessToken = response?.data?.accessToken;
-      setAuth({ email, password, accessToken });
+      const userId = response?.data?.userId;
+
+      console.log(userId, accessToken);
+      setAuth({ userId, accessToken });
       setEmail('');
       setPassword('');
+      navigate('/logbook', { replace: true });
     } catch (err) {
       if (err) {
         console.log(err);
       }
     }
-
-    // Reset form fields
-    setEmail('');
-    setPassword('');
   };
 
   return (

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
 import axios from 'axios';
+import AuthContext from '../context/AuthProvider';
 
 interface EditFormProps {
   editedEntryId: string;
@@ -23,6 +24,8 @@ export default function EditForm({
   const [arrivalTime, setArrivalTime] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
 
+  const { auth } = useContext(AuthContext);
+
   // Find the entry being edited
   const editedFormEntry = logbookEntries.find(
     (item: LogbookEntry) => item._id === editedEntryId
@@ -41,37 +44,39 @@ export default function EditForm({
     }
   }, [editedFormEntry]);
 
-  const handleEditForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEditForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Update the logbook entry
-    setLogbookEntries((prevEntries) =>
-      prevEntries.map((entry) =>
-        entry._id === editedEntryId
-          ? {
-              ...entry,
-              title,
-              departureIcao,
-              arrivalIcao,
-              aircraftType,
-              departureTime,
-              arrivalTime,
-              additionalInfo,
-            }
-          : entry
-      )
-    );
     try {
-      axios.put(`http://localhost:3000/api/logbook-entries/${editedEntryId}`, {
-        title,
-        userId: '6922e1df7513a020b5f46bd9', // TODO!!
-        departureIcao,
-        arrivalIcao,
-        aircraftType,
-        departureTime,
-        arrivalTime,
-        additionalInfo,
-      });
+      const response = await axios.put(
+        `http://localhost:3000/api/logbook-entries/${editedEntryId}`,
+        JSON.stringify({
+          title,
+          userId: auth.userId,
+          departureIcao,
+          arrivalIcao,
+          aircraftType,
+          departureTime,
+          arrivalTime,
+          additionalInfo,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.accessToken}`,
+          },
+        }
+      );
+
+      // Update the logbook entry with the response from the API
+      const updatedEntry = response?.data?.LogbookEntry || response?.data;
+      if (updatedEntry) {
+        setLogbookEntries((prevEntries) =>
+          prevEntries.map((entry) =>
+            entry._id === editedEntryId ? updatedEntry : entry
+          )
+        );
+      }
     } catch (err) {
       console.log(err);
     }

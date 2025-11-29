@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
 import axios from 'axios';
+import AuthContext from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 interface AddFormProps {
   setLogbookEntries: React.Dispatch<React.SetStateAction<LogbookEntry[]>>;
@@ -15,29 +17,19 @@ export default function AddForm({ setLogbookEntries }: AddFormProps) {
   const [arrivalTime, setArrivalTime] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
 
+  const { auth } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+
   const addNewLogookEntry = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    // Add new entry to the logbook
-    setLogbookEntries((prevEntries) => [
-      {
-        title: title,
-        departureIcao: departureIcao,
-        arrivalIcao: arrivalIcao,
-        aircraftType: aircraftType,
-        departureTime: departureTime,
-        arrivalTime: arrivalTime,
-        additionalInfo: additionalInfo,
-      },
-      ...prevEntries,
-    ]);
 
     try {
       const response = await axios.post(
         'http://localhost:3000/api/logbook-entries',
         JSON.stringify({
           title: title,
-          userId: '6922e1df7513a020b5f46bd9', // TODO!!
+          userId: auth.userId,
           departureIcao: departureIcao,
           arrivalIcao: arrivalIcao,
           aircraftType: aircraftType,
@@ -46,23 +38,34 @@ export default function AddForm({ setLogbookEntries }: AddFormProps) {
           additionalInfo: additionalInfo,
         }),
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.accessToken}`,
+          },
           //withCredentials: true,
         }
       );
       console.log(response?.data);
+
+      // Update state with the new entry from the API response (includes _id)
+      const newEntry = response?.data?.LogbookEntry || response?.data;
+      if (newEntry) {
+        setLogbookEntries((prevEntries) => [newEntry, ...prevEntries]);
+      }
+
+      // Reset form fields
+      setTitle('');
+      setDepartureIcao('');
+      setArrivalIcao('');
+      setAircraftType('');
+      setDepartureTime('');
+      setArrivalTime('');
+      setAdditionalInfo('');
+
+      navigate('/logbook', { replace: true });
     } catch (err) {
       console.log(err);
     }
-
-    // Reset form fields
-    setTitle('');
-    setDepartureIcao('');
-    setArrivalIcao('');
-    setAircraftType('');
-    setDepartureTime('');
-    setArrivalTime('');
-    setAdditionalInfo('');
   };
 
   return (

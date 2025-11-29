@@ -2,8 +2,7 @@ import { createContext, useState } from 'react';
 import type { ReactNode, Dispatch, SetStateAction } from 'react';
 
 type AuthState = {
-  email?: string;
-  password?: string;
+  userId?: string;
   accessToken?: string;
 };
 

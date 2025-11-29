@@ -85,15 +85,19 @@ export const handleLogin = async (
     await foundUser.save();
 
     // Create secure cookie with refresh token
+    /*
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       secure: false, // CHANGE TO TRUE IN PROD
       sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
+    */
+
+    const userId = foundUser._id;
 
     // Send access token to user
-    res.json({ accessToken });
+    res.json({ userId, accessToken });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({

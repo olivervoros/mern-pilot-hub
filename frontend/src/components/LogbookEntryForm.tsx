@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import LogbookEntryCard from './LogbookEntryCard';
 import EditForm from './EditForm';
 import { type LogbookEntry } from '../types/LogbookEntry';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider';
 
 interface LogbookEntryFormProps {
   logbookEntries: LogbookEntry[];
@@ -16,17 +18,24 @@ export default function LogbookEntryForm({
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editedEntryId, setEditedEntryId] = useState<string | null>(null);
 
-  const handleDelete = (_id: string) => {
-    const newEntries = logbookEntries.filter(
-      (prevEntries: LogbookEntry) => prevEntries._id !== _id
-    );
-    setLogbookEntries(newEntries);
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
+  const handleDelete = async (_id: string) => {
     try {
-      axios.delete(
-        `http://localhost:3000/api/logbook-entries/${editedEntryId}`,
-        {}
+      await axios.delete(`http://localhost:3000/api/logbook-entries/${_id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+        },
+      });
+
+      // Update state after successful deletion
+      const newEntries = logbookEntries.filter(
+        (prevEntries: LogbookEntry) => prevEntries._id !== _id
       );
+      setLogbookEntries(newEntries);
+
+      navigate('/logbook', { replace: true });
     } catch (err) {
       console.log(err);
     }

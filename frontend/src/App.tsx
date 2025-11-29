@@ -3,12 +3,14 @@ import Logbook from './components/Logbook';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import Register from './components/Register';
 import Login from './components/Login';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Nav from './components/Nav';
 import AddForm from './components/AddForm';
 import WeatherForecast from './components/WeatherForecast';
 import { type LogbookEntry } from './types/LogbookEntry';
 import axios from 'axios';
+import AuthContext from './context/AuthProvider';
+import LogOut from './components/Logout';
 
 type RegisterUser = {
   name: string;
@@ -26,11 +28,19 @@ function App() {
   const [loginUser, setLoginUser] = useState<LoginUser[]>([]);
   const [logbookEntries, setLogbookEntries] = useState<LogbookEntry[]>([]);
 
+  const { auth } = useContext(AuthContext);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(`Bearer ${auth.accessToken}`);
         const { data: response } = await axios.get(
-          'http://localhost:3000/api/logbook-entries'
+          'http://localhost:3000/api/logbook-entries',
+          {
+            headers: {
+              Authorization: `Bearer ${auth.accessToken}`,
+            },
+          }
         );
         console.log(response);
         // The API returns { LogbookEntries: [...] }, so extract the array
@@ -43,19 +53,22 @@ function App() {
     };
 
     fetchData();
-  }, []);
+  }, [auth.accessToken]);
 
   return (
     <>
       <BrowserRouter>
         <Nav />
         <Routes>
-          <Route
-            path='login'
-            element={
-              <Login loginUser={loginUser} setLoginUser={setLoginUser} />
-            }
-          />
+          {!auth.accessToken && (
+            <Route
+              path='login'
+              element={
+                <Login loginUser={loginUser} setLoginUser={setLoginUser} />
+              }
+            />
+          )}
+          {auth.accessToken && <Route path='/logout' element={<LogOut />} />}
           <Route
             path='register'
             element={<Register newUser={newUser} setNewUser={setNewUser} />}

@@ -17,11 +17,11 @@ const router: Router = express.Router();
 // Define route for creating a new logbook entry
 // Example: Apply middleware to specific routes
 // router.post('/add', authenticateToken, createNewLogbookEntry);
-router.post('/', createNewLogbookEntry); // TODO: Add Auth back
+router.post('/', authenticateToken, createNewLogbookEntry);
 
 // Example: Protect multiple routes
 // router.get('/', authenticateToken, getAllLogbookEntries);
-router.get('/', getAllLogbookEntries); // TODO: Add Auth back
+router.get('/', authenticateToken, getAllLogbookEntries);
 
 // Example: Protect update route
 // router.put('/:id', authenticateToken, updateLogbookEntry);

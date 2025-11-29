@@ -1,9 +1,13 @@
 import {
   useState,
+  useContext,
   type FormEvent,
   type Dispatch,
   type SetStateAction,
 } from 'react';
+import axios from 'axios';
+import AuthContext from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 type NewUser = {
   name: string;
@@ -21,23 +25,54 @@ export default function Register({ setNewUser }: RegisterProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Add new entry to the logbook
-    setNewUser((prevEntries) => [
-      {
-        name: name,
-        email: email,
-        password: password,
-      },
-      ...prevEntries,
-    ]);
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/users',
+        JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-    // Reset form fields
-    setName('');
-    setEmail('');
-    setPassword('');
+      // Add new entry to the logbook
+      setNewUser((prevEntries) => [
+        {
+          name: name,
+          email: email,
+          password: password,
+        },
+        ...prevEntries,
+      ]);
+
+      const accessToken = response?.data?.accessToken;
+      const userId = response?.data?.userId;
+
+      console.log(userId, accessToken);
+      setAuth({ userId, accessToken });
+
+      // Reset form fields
+      setName('');
+      setEmail('');
+      setPassword('');
+
+      navigate('/logbook', { replace: true });
+
+      // Update the logbook entry with the response from the API
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
