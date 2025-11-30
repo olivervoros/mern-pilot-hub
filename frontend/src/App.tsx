@@ -31,6 +31,12 @@ function App() {
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
+    // Only fetch logbook entries when user is authenticated
+    if (!auth.accessToken) {
+      setLogbookEntries([]);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         console.log(`Bearer ${auth.accessToken}`);
