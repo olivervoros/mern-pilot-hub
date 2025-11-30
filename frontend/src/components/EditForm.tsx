@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
-import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
+import { updateLogbookEntry } from '../services/logbookEntryService';
 
 interface EditFormProps {
   editedEntryId: string;
@@ -47,24 +47,24 @@ export default function EditForm({
   const handleEditForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const editLogbookEntry = JSON.stringify({
+      title,
+      userId: auth.userId,
+      departureIcao,
+      arrivalIcao,
+      aircraftType,
+      departureTime,
+      arrivalTime,
+      additionalInfo,
+    });
+
     try {
-      const response = await axios.put(
-        `http://localhost:3000/api/logbook-entries/${editedEntryId}`,
-        JSON.stringify({
-          title,
-          userId: auth.userId,
-          departureIcao,
-          arrivalIcao,
-          aircraftType,
-          departureTime,
-          arrivalTime,
-          additionalInfo,
-        }),
+      const response = await updateLogbookEntry(
+        editedEntryId,
+        editLogbookEntry,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${auth.accessToken}`,
-          },
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth.accessToken}`,
         }
       );
 

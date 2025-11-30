@@ -1,8 +1,8 @@
 import { useState, useContext } from 'react';
 import { type LogbookEntry } from '../types/LogbookEntry';
-import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import { createLogbookEntry } from '../services/logbookEntryService';
 
 interface AddFormProps {
   setLogbookEntries: React.Dispatch<React.SetStateAction<LogbookEntry[]>>;
@@ -25,26 +25,22 @@ export default function AddForm({ setLogbookEntries }: AddFormProps) {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/logbook-entries',
-        JSON.stringify({
-          title: title,
-          userId: auth.userId,
-          departureIcao: departureIcao,
-          arrivalIcao: arrivalIcao,
-          aircraftType: aircraftType,
-          departureTime: departureTime,
-          arrivalTime: arrivalTime,
-          additionalInfo: additionalInfo,
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${auth.accessToken}`,
-          },
-          //withCredentials: true,
-        }
-      );
+      const newLogbookEntry = JSON.stringify({
+        title: title,
+        userId: auth.userId,
+        departureIcao: departureIcao,
+        arrivalIcao: arrivalIcao,
+        aircraftType: aircraftType,
+        departureTime: departureTime,
+        arrivalTime: arrivalTime,
+        additionalInfo: additionalInfo,
+      });
+
+      const response = await createLogbookEntry(newLogbookEntry, {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${auth.accessToken}`,
+      });
+
       console.log(response?.data);
 
       // Update state with the new entry from the API response (includes _id)

@@ -8,9 +8,9 @@ import Nav from './components/Nav';
 import AddForm from './components/AddForm';
 import WeatherForecast from './components/WeatherForecast';
 import { type LogbookEntry } from './types/LogbookEntry';
-import axios from 'axios';
 import AuthContext from './context/AuthProvider';
 import LogOut from './components/Logout';
+import { getLogbookEntries } from './services/logbookEntryService';
 
 type RegisterUser = {
   name: string;
@@ -34,14 +34,11 @@ function App() {
     const fetchData = async () => {
       try {
         console.log(`Bearer ${auth.accessToken}`);
-        const { data: response } = await axios.get(
-          'http://localhost:3000/api/logbook-entries',
-          {
-            headers: {
-              Authorization: `Bearer ${auth.accessToken}`,
-            },
-          }
-        );
+
+        const { data: response } = await getLogbookEntries({
+          Authorization: `Bearer ${auth.accessToken}`,
+        });
+
         console.log(response);
         // The API returns { LogbookEntries: [...] }, so extract the array
         setLogbookEntries(response.LogbookEntries || []);

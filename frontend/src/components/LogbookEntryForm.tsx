@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react';
 import LogbookEntryCard from './LogbookEntryCard';
 import EditForm from './EditForm';
 import { type LogbookEntry } from '../types/LogbookEntry';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
+import { deleteLogbookEntry } from '../services/logbookEntryService';
 
 interface LogbookEntryFormProps {
   logbookEntries: LogbookEntry[];
@@ -23,10 +23,8 @@ export default function LogbookEntryForm({
 
   const handleDelete = async (_id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/logbook-entries/${_id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.accessToken}`,
-        },
+      await deleteLogbookEntry(_id, {
+        Authorization: `Bearer ${auth.accessToken}`,
       });
 
       // Update state after successful deletion
