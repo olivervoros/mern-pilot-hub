@@ -5,9 +5,9 @@ import {
   type Dispatch,
   type SetStateAction,
 } from 'react';
-import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../services/authService';
 
 type NewUser = {
   email: string;
@@ -39,14 +39,12 @@ export default function Login({ setLoginUser }: LoginProps) {
     ]);
 
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/login`,
-        JSON.stringify({ email, password }),
-        {
-          headers: { 'Content-Type': 'application/json' },
-          //withCredentials: true,
-        }
-      );
+      const userData = JSON.stringify({ email, password });
+
+      const response = await login(userData, {
+        'Content-Type': 'application/json',
+      });
+
       console.log(JSON.stringify(response?.data));
       //console.log(JSON.stringify(response));
       const accessToken = response?.data?.accessToken;

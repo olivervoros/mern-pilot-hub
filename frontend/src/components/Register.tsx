@@ -5,9 +5,9 @@ import {
   type Dispatch,
   type SetStateAction,
 } from 'react';
-import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../services/authService';
 
 type NewUser = {
   name: string;
@@ -32,19 +32,15 @@ export default function Register({ setNewUser }: RegisterProps) {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/users',
-        JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const newUser = JSON.stringify({
+        name,
+        email,
+        password,
+      });
+
+      const response = await register(newUser, {
+        'Content-Type': 'application/json',
+      });
 
       // Add new entry to the logbook
       setNewUser((prevEntries) => [

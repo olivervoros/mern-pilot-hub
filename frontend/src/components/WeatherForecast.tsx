@@ -17,8 +17,14 @@ export default function WeatherForecast() {
     try {
       const baseURL = 'https://api.aimlapi.com/v1';
 
-      // Insert your AIML API Key in the quotation marks instead of my_key:
-      const apiKey = 'dd3e2726e4814ae7b4740d1122545e09';
+      // Load API key from environment variable
+      const apiKey = import.meta.env.VITE_WEATHER_AI_API_KEY;
+
+      if (!apiKey) {
+        throw new Error(
+          'WEATHER_AI_API_KEY is not defined in environment variables'
+        );
+      }
 
       const systemPrompt = 'You are a professional weather station.';
       const userPrompt = `Please send us the weather forecast and METAR for the following airport ICAO:
